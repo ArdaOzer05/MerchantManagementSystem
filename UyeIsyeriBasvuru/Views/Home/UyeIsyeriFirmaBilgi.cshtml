@@ -1,0 +1,147 @@
+﻿@model UyeIsyeriFirmaBilgi
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-building text-primary mr-2"></i> Üye İşyeri Firma Bilgileri Girişi
+        </h1>
+    </div>
+
+    @* --- BİLDİRİM VE HATA YÖNETİM ALANLARI --- *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @* Akıllı Hata Özet Kutusu (Sadece validasyon hatası varsa görünür) *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-ban mr-1"></i> Form Validasyon Hatası:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    @* --- FİRMA BİLGİLERİ FORMU --- *@
+    <div class="card shadow mb-4 border-left-primary">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-edit mr-1"></i> Firma Kurumsal Tanımlama Formu</h6>
+        </div>
+        <div class="card-body text-dark">
+
+            <form asp-controller="Home" asp-action="UyeIsyeriFirmaBilgi" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group bg-light p-3 rounded border">
+                    <label asp-for="BasvuruId" class="font-weight-bold small text-primary">İlişkili CRM Başvuru Kaydı</label>
+                    <select asp-for="BasvuruId" class="form-control" asp-items="@(new SelectList(ViewBag.Basvurular, "BasvuruId", "Aciklama"))">
+                        <option value="">-- Firma Bilgisinin Bağlanacağı Başvuruyu Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="BasvuruId" class="text-danger small"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="FirmaUnvan" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="FirmaUnvan" class="form-control" placeholder="Örn: Ahmet Yılmaz Teknoloji Ltd. Şti." />
+                        <span asp-validation-for="FirmaUnvan" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="VergiNo" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="VergiNo" class="form-control" maxlength="10" placeholder="10 haneli vergi numarası giriniz" />
+                        <span asp-validation-for="VergiNo" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="VergiDairesi" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="VergiDairesi" class="form-control" placeholder="Örn: Boğaziçi Kurumlar V.D." />
+                        <span asp-validation-for="VergiDairesi" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="MersisNo" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="MersisNo" class="form-control" maxlength="16" placeholder="Varsa 16 haneli MERSİS no" />
+                        <span asp-validation-for="MersisNo" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="FaaliyetKonusu" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="FaaliyetKonusu" class="form-control" placeholder="Örn: E-Ticaret Yazılım ve Perakende Gıda" />
+                        <span asp-validation-for="FaaliyetKonusu" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="KurulusTarihi" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="KurulusTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="KurulusTarihi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="Telefon" class="font-weight-bold small text-secondary"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light small">+90</span>
+                            </div>
+                            <input asp-for="Telefon" class="form-control" placeholder="5XXXXXXXXX" maxlength="10" />
+                        </div>
+                        <span asp-validation-for="Telefon" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="Email" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="info@firmadomani.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label asp-for="Il" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="Il" class="form-control">
+                            <option value="">-- İl Seçiniz --</option>
+                            <option value="İstanbul">İstanbul</option>
+                            <option value="Ankara">Ankara</option>
+                            <option value="İzmir">İzmir</option>
+                            <option value="Bursa">Bursa</option>
+                            <option value="Antalya">Antalya</option>
+                            <option value="Kocaeli">Kocaeli</option>
+                        </select>
+                        <span asp-validation-for="Il" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label asp-for="Adres" class="font-weight-bold small text-secondary"></label>
+                        <textarea asp-for="Adres" rows="2" class="form-control" placeholder="Mahalle, Cadde, Sokak, Kapı No, İlçe bilgilerini eksiksiz giriniz..."></textarea>
+                        <span asp-validation-for="Adres" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end" style="gap: 10px;">
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Firma Bilgilerini Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

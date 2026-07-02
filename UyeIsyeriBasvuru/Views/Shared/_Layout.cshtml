@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Üye İşyeri Başvuru Yönetim Sistemi</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #f8fafc;
+            }
+            /* Soft ve modern tasarım */
+            .custom-sidebar {
+                background: #ffffff !important;
+                border-right: 1px solid #e2e8f0;
+            }
+
+                .custom-sidebar .sidebar-brand {
+                    background: #f1f5f9;
+                    color: #0f172a !important;
+                    font-weight: 700;
+                }
+
+                .custom-sidebar .nav-item .nav-link {
+                    color: #475569 !important;
+                    font-weight: 500;
+                    padding: 0.6rem 1rem !important;
+                    border-radius: 6px;
+                    margin: 0.2rem 0.8rem;
+                }
+                    /* Aktif veya üzerine gelinen menü elemanları */
+                    .custom-sidebar .nav-item .nav-link:hover {
+                        background-color: #f1f5f9 !important;
+                        color: #1e3a8a !important;
+                    }
+
+                .custom-sidebar .sidebar-heading {
+                    color: #94a3b8 !important;
+                    font-weight: 700;
+                    font-size: 0.7rem !important;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    padding: 1rem 1.5rem 0.5rem 1.5rem !important;
+                }
+            /* Üst Barı Sadeleştirme */
+            .custom-topbar {
+                background-color: #ffffff !important;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: none !important;
+            }
+            /* Kart Yapılarını Modernleştirme */
+            .card {
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 12px !important;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+            }
+
+            .card-header {
+                background: #ffffff !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                border-top-left-radius: 12px !important;
+                border-top-right-radius: 12px !important;
+            }
+
+            .sidebar-divider {
+                border-top: 1px solid #f1f5f9 !important;
+                margin: 0.5rem 0 !important;
+            }
+    </style>
+</head>
+<body id="page-top">
+@functions {
+    string IsActive(string action)
+    {
+        return ViewContext.RouteData.Values["Action"]?.ToString() == action ? "active" : "";
+    }
+}
+<div id="wrapper">
+    <ul class="navbar-nav custom-sidebar sidebar sidebar-light accordion" id="accordionSidebar">
+
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="Home" asp-action="Index">
+            <div class="sidebar-brand-icon"><i class="fas fa-university text-primary"></i></div>
+            <div class="sidebar-brand-text mx-2 text-dark font-weight-bold" style="font-size: 0.85rem;">Üye İşyeri CRM</div>
+        </a>
+
+        <li class="nav-item mt-3 @IsActive("Index")">
+            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-fw fa-tachometer-alt mr-2"></i>
+                <span>Ana Panel</span>
+            </a>
+        </li>
+
+        <div class="sidebar-heading">Üye İşyeri İşlemleri</div>
+
+        <li class="nav-item @IsActive("BasvuruListesi")">
+            <a class="nav-link" asp-controller="Home" asp-action="BasvuruListesi">
+                <i class="fas fa-fw fa-list mr-2"></i>
+                <span>Başvuru Listesi (CRM)</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriBasvuru")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriBasvuru">
+                <i class="fas fa-fw fa-plus-circle mr-2"></i>
+                <span>Başvuru Giriş</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriFirmaBilgi")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriFirmaBilgi">
+                <i class="fas fa-fw fa-building mr-2"></i>
+                <span>Firma Bilgi Giriş</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriYetkili")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriYetkili">
+                <i class="fas fa-fw fa-user-tie mr-2"></i>
+                <span>Yetkili Giriş</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriPosTalep")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriPosTalep">
+                <i class="fas fa-fw fa-boxes mr-2"></i>
+                <span>POS Talep Giriş</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriBankaBilgi")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriBankaBilgi">
+                <i class="fas fa-fw fa-credit-card mr-2"></i>
+                <span>Banka Bilgi Giriş</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriDokuman")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriDokuman">
+                <i class="fas fa-fw fa-file-upload mr-2"></i>
+                <span>Doküman Giriş</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriDurumLog")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriDurumLog">
+                <i class="fas fa-fw fa-history mr-2"></i>
+                <span>Durum Log Giriş</span>
+            </a>
+        </li>
+
+        <div class="sidebar-heading">Gelişmiş Bankacılık</div>
+
+        <li class="nav-item @IsActive("UyeIsyeriPosBasvuru")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriPosBasvuru">
+                <i class="fas fa-fw fa-terminal mr-2"></i>
+                <span>POS İşlemleri</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriCalismaSarti")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriCalismaSarti">
+                <i class="fas fa-fw fa-file-contract mr-2"></i>
+                <span>Çalışma Şartı İşlemleri</span>
+            </a>
+        </li>
+
+        <li class="nav-item @IsActive("UyeIsyeriKredibilite")">
+            <a class="nav-link" asp-controller="Home" asp-action="UyeIsyeriKredibilite">
+                <i class="fas fa-fw fa-chart-line mr-2"></i>
+                <span>Kredibilite İşlemleri</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider d-none d-md-block mt-4">
+    </ul>
+
+    <div id="content-wrapper" class="d-flex flex-column" style="background-color: #f8fafc;">
+        <div id="content">
+            <nav class="navbar navbar-expand navbar-light custom-topbar mb-4 static-top">
+                <div class="d-flex align-items-center w-100 justify-content-between px-2">
+                    <span class="text-dark font-weight-bold" style="font-size: 1.1rem; letter-spacing: -0.02em;">
+                        VakıfBank / World Üye İşyeri Entegrasyon Modülü
+                    </span>
+                    <span class="badge badge-light text-secondary border px-3 py-2" style="border-radius: 20px; font-weight: 500;">
+                        <i class="fas fa-shield-alt text-success mr-1"></i> Güvenli Ortam
+                    </span>
+                </div>
+            </nav>
+
+            <div class="container-fluid">
+                <!-- SİSTEM MESAJLARI BURAYA EKLENDİ (TÜM SAYFALAR İÇİN ORTAK) -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm font-weight-bold text-success" role="alert" style="background-color: #ecfdf5; border-radius: 8px;">
+                        <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="close text-success" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm font-weight-bold text-danger" role="alert" style="background-color: #fef2f2; border-radius: 8px;">
+                        <i class="fas fa-exclamation-circle mr-2"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="close text-danger" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                }
+
+                @RenderBody()
+            </div>
+
+        </div>
+
+        <footer class="sticky-footer" style="background: transparent;">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto text-muted" style="font-size: 0.8rem;">
+                    <span>Üye İşyeri CRM Portalı &copy; 2026</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/js/sb-admin-2.min.js"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

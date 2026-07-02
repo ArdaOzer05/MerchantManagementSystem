@@ -1,0 +1,155 @@
+﻿@{
+    ViewData["Title"] = "Ana Panel";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+</div>
+
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Son 6 Ay Başvuru Trendi</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area" style="height: 300px;">
+                    <canvas id="myAreaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">POS Dağılım Oranı (%)</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie" style="height: 300px;">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">İl Bazlı Başvuru Dağılımı</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-bar" style="height: 300px;">
+                    <canvas id="myBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Verileri al (Güvenli şekilde)
+            var rawLabels = @Html.Raw(ViewBag.BasvuruLabels ?? "[]");
+            var rawData = @Html.Raw(ViewBag.BasvuruData ?? "[]");
+            var ilLabels = @Html.Raw(ViewBag.IlLabels ?? "[]");
+            var ilData = @Html.Raw(ViewBag.IlData ?? "[]");
+
+            // 1. Çizgi Grafik
+            try {
+                var ctx = document.getElementById("myAreaChart").getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: rawLabels,
+                        datasets: [{
+                            label: "Başvuru Sayısı",
+                            data: rawData,
+                            borderColor: "#4e73df",
+                            backgroundColor: "rgba(78, 115, 223, 0.05)",
+                            pointRadius: 4,
+                            lineTension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { yAxes: [{ ticks: { beginAtZero: true, stepSize: 1 } }] }
+                    }
+                });
+            } catch(e) { console.error("Çizgi Grafik Hatası:", e); }
+
+            // 2. Pasta Grafik
+            try {
+                var ctx2 = document.getElementById("myPieChart").getContext('2d');
+                var fiziki = @(ViewBag.FizikselPos ?? 0);
+                var sanal = @(ViewBag.SanalPos ?? 0);
+                var toplam = fiziki + sanal;
+
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ["Fiziki POS", "Sanal POS"],
+                        datasets: [{
+                            data: [fiziki, sanal],
+                            backgroundColor: ['#4e73df', '#1cc88a']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            datalabels: {
+                                color: '#fff',
+                                formatter: (value) => {
+                                    return toplam > 0 ? ((value / toplam) * 100).toFixed(1) + "%" : "";
+                                },
+                                font: { weight: 'bold', size: 14 }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            } catch(e) { console.error("Pasta Grafik Hatası:", e); }
+
+                        // 3. İl Bazlı Sütun Grafiği (Daraltılmış ve Sabit Y Eksenli)
+            try {
+                var ctx3 = document.getElementById("myBarChart").getContext('2d');
+                new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: ilLabels,
+                        datasets: [{
+                            label: 'Başvuru Sayısı',
+                            data: ilData,
+                            backgroundColor: '#36b9cc',
+                            barPercentage: 0.5,
+                            categoryPercentage: 0.6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    stepSize: 1,
+                                    precision: 0,
+                                    max: 3            // Grafiği zorla 3'te kilitledik, 5 artık görünmeyecek
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            } catch(e) { console.error("Sütun Grafik Hatası:", e); }
+        });
+    </script>
+}

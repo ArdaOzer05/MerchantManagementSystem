@@ -1,0 +1,120 @@
+﻿@model UyeIsyeriBasvuru.Models.UyeIsyeriYetkili
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-user-tie text-primary mr-2"></i> Üye İşyeri Firma Yetkilisi Girişi
+        </h1>
+    </div>
+
+    @* --- BİLDİRİM VE HATA YÖNETİM ALANLARI --- *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @* Akıllı Hata Özet Kutusu (Yalnızca validasyon hatası oluştuğunda görünür hale gelir) *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-ban mr-1"></i> Form Validasyon Hatası:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    @* --- YETKİLİ BİLGİLERİ FORMU --- *@
+    <div class="card shadow mb-4 border-left-primary">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-user-shield mr-1"></i> Firma Yetkilisi Atama ve Tanımlama Formu</h6>
+        </div>
+        <div class="card-body text-dark">
+
+            <form asp-controller="Home" asp-action="UyeIsyeriYetkili" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group bg-light p-3 rounded border">
+                    <label asp-for="BasvuruId" class="font-weight-bold small text-primary">İlişkili CRM Başvuru Kaydı</label>
+                    <select asp-for="BasvuruId" class="form-control" asp-items="@(new SelectList(ViewBag.Basvurular, "BasvuruId", "Aciklama"))">
+                        <option value="">-- Yetkili Bilgisinin Bağlanacağı Başvuruyu Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="BasvuruId" class="text-danger small"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="Ad" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="Ad" class="form-control" placeholder="Yetkilinin Adı" />
+                        <span asp-validation-for="Ad" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="Soyad" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="Soyad" class="form-control" placeholder="Yetkilinin Soyadı" />
+                        <span asp-validation-for="Soyad" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="TcKimlikNo" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="TcKimlikNo" class="form-control" maxlength="11" placeholder="11 haneli T.C. Kimlik numarası giriniz" />
+                        <span asp-validation-for="TcKimlikNo" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="CepTelefonu" class="font-weight-bold small text-secondary"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light small">+90</span>
+                            </div>
+                            <input asp-for="CepTelefonu" class="form-control" placeholder="5XXXXXXXXX" maxlength="10" />
+                        </div>
+                        <span asp-validation-for="CepTelefonu" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="Email" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="ornek@firma.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="YetkiTipi" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="YetkiTipi" class="form-control">
+                            <option value="">-- Yetki Derecesi Seçiniz --</option>
+                            <option value="Münferit Yetkili (Tek Başına)">Münferit Yetkili (Tek Başına)</option>
+                            <option value="Müşterek Yetkili (Birlikte)">Müşterek Yetkili (Birlikte)</option>
+                            <option value="Şirket Ortağı">Şirket Ortağı</option>
+                            <option value="Finans / Muhasebe Sorumlusu">Finans / Muhasebe Sorumlusu</option>
+                            <option value="Teknik Entegrasyon Yetkilisi">Teknik Entegrasyon Yetkilisi</option>
+                        </select>
+                        <span asp-validation-for="YetkiTipi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end" style="gap: 10px;">
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Yetkili Bilgilerini Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,159 @@
+﻿@model UyeIsyeriBasvuru.Models.UyeIsyeriDurumLog
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-history text-primary mr-2"></i> Üye İşyeri Durum Değişiklik Logları
+        </h1>
+    </div>
+
+    @* --- BİLDİRİM VE HATA YÖNETİM ALANLARI --- *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @* Akıllı Hata Özet Kutusu (Yalnızca validasyon hatası oluştuğunda görünür) *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-ban mr-1"></i> Form Validasyon Hatası:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    @* --- DURUM LOG GİRİŞ FORMU --- *@
+    <div class="card shadow mb-4 border-left-primary">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-plus-circle mr-1"></i> Yeni Durum Güncelleme ve Log Ekleme Formu</h6>
+        </div>
+        <div class="card-body text-dark">
+
+            <form asp-controller="Home" asp-action="UyeIsyeriDurumLog" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group bg-light p-3 rounded border">
+                    <label asp-for="BasvuruId" class="font-weight-bold small text-primary">İlişkili CRM Başvuru Kaydı</label>
+                    <select asp-for="BasvuruId" class="form-control" asp-items="@(new SelectList(ViewBag.Basvurular, "BasvuruId", "Aciklama"))">
+                        <option value="">-- Durumu Güncellenecek Başvuruyu Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="BasvuruId" class="text-danger small"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="EskiDurum" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="EskiDurum" class="form-control">
+                            <option value="">-- Eski Durumu Seçiniz --</option>
+                            <option value="İncelemede">İncelemede</option>
+                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Reddedildi">Reddedildi</option>
+                        </select>
+                        <span asp-validation-for="EskiDurum" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="YeniDurum" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="YeniDurum" class="form-control">
+                            <option value="">-- Atanacak Yeni Durumu Seçiniz --</option>
+                            <option value="İncelemede">İncelemede</option>
+                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Reddedildi">Reddedildi</option>
+                        </select>
+                        <span asp-validation-for="YeniDurum" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Aciklama" class="font-weight-bold small text-secondary"></label>
+                    <textarea asp-for="Aciklama" rows="2" class="form-control" placeholder="Durum değişikliğinin nedenini, kurul kararlarını ya da notları buraya giriniz..."></textarea>
+                    <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="IslemYapanKullanici" class="font-weight-bold small text-secondary"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light fas fa-user"></span>
+                            </div>
+                            <input asp-for="IslemYapanKullanici" class="form-control" placeholder="Örn: ahmet.yilmaz / Sistem Yöneticisi" />
+                        </div>
+                        <span asp-validation-for="IslemYapanKullanici" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="IslemTarihi" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="IslemTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="IslemTarihi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Durumu Değiştir ve Logla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* --- DURUM GEÇMİŞİ LİSTELEME (TIMELINE) --- *@
+    <div class="card shadow mb-4 border-left-info">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-info"><i class="fas fa-stream mr-1"></i> Sistem Audit Trail / Denetim İzi Geçmişi</h6>
+        </div>
+        <div class="card-body text-dark">
+            @if (ViewBag.Loglar != null && ((IEnumerable<dynamic>)ViewBag.Loglar).Any())
+            {
+                <div class="list-group list-group-flush border rounded p-2 bg-light">
+                    @foreach (var item in ViewBag.Loglar)
+                    {
+                        <div class="list-group-item bg-white border rounded shadow-sm mb-2 p-3">
+                            <div class="d-flex w-100 justify-content-between align-items-center mb-2 flex-wrap" style="gap: 10px;">
+                                <h6 class="mb-0 font-weight-bold">
+                                    <span class="badge badge-secondary p-2">@item.EskiDurum</span>
+                                    <i class="fas fa-long-arrow-alt-right mx-2 text-primary"></i>
+                                    <span class="badge badge-success p-2">@item.YeniDurum</span>
+                                </h6>
+                                <span class="badge badge-light border text-muted p-2">
+                                    <i class="far fa-calendar-alt mr-1"></i> @item.IslemTarihi.ToString("dd.MM.yyyy")
+                                </span>
+                            </div>
+                            <p class="mb-2 small text-secondary bg-light p-2 rounded border">
+                                <strong><i class="fas fa-comment-dots text-muted mr-1"></i> Değişiklik Nedeni:</strong> @item.Aciklama
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center small text-muted pt-1">
+                                <span><i class="fas fa-user-edit mr-1 text-info"></i> Personel: <strong>@item.IslemYapanKullanici</strong></span>
+                                <span class="small font-italic">ID: #@item.LogId</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4 bg-light rounded border text-muted">
+                    <i class="fas fa-info-circle fa-2x mb-2 text-secondary"></i>
+                    <p class="mb-0 font-weight-bold">Sistemde kayıtlı herhangi bir durum log izi bulunmamaktadır.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

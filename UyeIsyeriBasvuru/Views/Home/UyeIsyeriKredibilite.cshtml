@@ -1,0 +1,111 @@
+﻿@model UyeIsyeriBasvuru.Models.UyeIsyeriKredibilite
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chart-line text-info mr-2"></i> Mali İstihbarat ve Kredibilite Değerlendirmesi
+        </h1>
+    </div>
+
+    @* --- RISK VE DOĞRULAMA BİLDİRİMLERİ --- *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-exclamation-triangle mr-1"></i> Form Giriş Hataları:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    <div class="card shadow mb-4 border-left-info">
+        <div class="card-header py-3 bg-light d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-info"><i class="fas fa-shield-alt mr-1"></i> Risk Yönetimi & Ciro Beyanları</h6>
+        </div>
+        <div class="card-body text-dark">
+            <form asp-controller="Home" asp-action="UyeIsyeriKredibilite" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-row align-items-center mb-3">
+                    <div class="form-group col-md-6">
+                        <label asp-for="BasvuruId" class="font-weight-bold small text-primary">CRM Başvuru Havuzu</label>
+                        <select asp-for="BasvuruId" class="form-control text-dark" asp-items="@(new SelectList(ViewBag.Basvurular, "BasvuruId", "Aciklama"))">
+                            <option value="">-- Başvuru Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="BasvuruId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold small text-danger">Merkez Bankası / KKB İstihbarat Durumu</label>
+                        <div class="card border-left-danger shadow-sm p-2 bg-light">
+                            <div class="custom-control custom-checkbox ml-2">
+                                <input type="checkbox" asp-for="IsOlumsuzPosIstihbarat" class="custom-control-input" id="chkIstihbarat" />
+                                <label class="custom-control-label font-weight-bold text-danger" for="chkIstihbarat">
+                                    <i class="fas fa-user-slash mr-1"></i> Olumsuz POS / İstihbarat Kaydı Mevcut
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider" />
+
+                @* CİRO VE HACİM PLANLAMALARI *@
+                <h6 class="text-info font-weight-bold mb-3"><i class="fas fa-wallet mr-1"></i> Yıllık/Aylık Ciro ve Hacim Bilgileri</h6>
+                <div class="form-row mb-3">
+                    <div class="form-group col-md-6">
+                        <label asp-for="AylikYurtIciCiro" class="small font-weight-bold"></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" asp-for="AylikYurtIciCiro" class="form-control text-dark" placeholder="0.00" />
+                            <div class="input-group-append" style="width: 30%;">
+                                <select asp-for="AylikYurtIciCiroParaBirimi" class="form-control btn-light text-dark font-weight-bold border-left-0">
+                                    <option value="TRY">TRY (₺)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <span asp-validation-for="AylikYurtIciCiro" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label asp-for="AylikYurtDisiCiro" class="small font-weight-bold"></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" asp-for="AylikYurtDisiCiro" class="form-control text-dark" placeholder="0.00" />
+                            <div class="input-group-append" style="width: 30%;">
+                                <select asp-for="AylikYurtDisiCiroParaBirimi" class="form-control btn-light text-dark font-weight-bold border-left-0">
+                                    <option value="TRY">TRY (₺)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <span asp-validation-for="AylikYurtDisiCiro" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider" />
+
+                @* METİNSEL İSTİHBARAT ALANLARI *@
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="IsyeriFaaliyetKonusuDetay" class="small font-weight-bold text-secondary"><i class="fas fa-store mr-1"></i> İşyeri Faaliyet Konusu Detayı</label>
+                        <textarea asp-for="IsyeriFaaliyetKonusuDetay" rows="4" class="form-control text-dark" placeholder="Firmanın yürüttüğü ticari operasyonları ve sektörel detaylarını açıklayınız..."></textarea>
+                        <span asp-validation-for="IsyeriFaaliyetKonusuDetay" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label asp-for="GenelSubeGorusu" class="small font-weight-bold text-secondary"><i class="fas fa-comments text-info mr-1"></i> Genel Şube İstihbarat Görüşü</label>
+                        <textarea asp-for="GenelSubeGorusu" rows="4" class="form-control text-dark" placeholder="Şube portföy yöneticisinin firma hakkındaki nihai istihbarat kanaatini belirtiniz..."></textarea>
+                        <span asp-validation-for="GenelSubeGorusu" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-info px-5 shadow">
+                        <i class="fas fa-save mr-1"></i> İstihbarat Raporunu Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

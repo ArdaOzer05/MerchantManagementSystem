@@ -1,0 +1,130 @@
+﻿@model UyeIsyeriBasvuruModel
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-file-signature text-primary mr-2"></i> Yeni Üye İşyeri Başvuru Girişi
+        </h1>
+    </div>
+
+    @* --- BİLDİRİM VE HATA YÖNETİM ALANLARI --- *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @* Sadece validasyon hatası varsa tetiklenen akıllı hata özeti kutusu *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-ban mr-1"></i> Lütfen Aşağıdaki Hataları Düzelterek Yeniden Deneyiniz:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    @* --- BAŞVURU FORMU KARTI --- *@
+    <div class="card shadow mb-4 border-left-primary">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-edit mr-1"></i> Temel Başvuru Bilgileri Formu</h6>
+        </div>
+        <div class="card-body text-dark">
+
+            <form asp-controller="Home" asp-action="UyeIsyeriBasvuru" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="BasvuruId" />
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="BasvuruNO" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="BasvuruNO" class="form-control" placeholder="Örn: APP-2026-0001" />
+                        <span asp-validation-for="BasvuruNO" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="MusteriTipi" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="MusteriTipi" class="form-control">
+                            <option value="">-- Müşteri Tipi Seçiniz --</option>
+                            <option value="Tüzel Müşteri">Tüzel Müşteri</option>
+                            <option value="Şahıs Şirketi">Şahıs Şirketi</option>
+                            <option value="Yabancı Uyruklu">Yabancı Uyruklu</option>
+                        </select>
+                        <span asp-validation-for="MusteriTipi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="BasvuruTarihi" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="BasvuruTarihi" class="form-control" type="date" />
+                        <span asp-validation-for="BasvuruTarihi" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="BasvuruDurumu" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="BasvuruDurumu" class="form-control">
+                            <option value="İncelemede">İncelemede</option>
+                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Reddedildi">Reddedildi</option>
+                        </select>
+                        <span asp-validation-for="BasvuruDurumu" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-row bg-light p-3 rounded mb-3 border">
+                    <div class="form-group col-md-6 mb-md-0">
+                        <label asp-for="OnayTarihi" class="font-weight-bold small text-muted"></label>
+                        <input asp-for="OnayTarihi" class="form-control" type="date" />
+                    </div>
+                    <div class="form-group col-md-6 mb-0">
+                        <label asp-for="RedNedeni" class="font-weight-bold small text-muted"></label>
+                        <input asp-for="RedNedeni" class="form-control" type="number" placeholder="Hata/Red Kodu (İsteğe Bağlı)" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="KayitTarihi" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="KayitTarihi" class="form-control" type="date" readonly />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="GuncellemeTarihi" class="font-weight-bold small text-secondary"></label>
+                        <input asp-for="GuncellemeTarihi" class="form-control" type="date" readonly placeholder="Otomatik Güncellenir" />
+                    </div>
+                </div>
+
+                <div class="form-group mt-2">
+                    <div class="custom-control custom-switch">
+                        <input asp-for="AktifMi" class="custom-control-input" type="checkbox" checked />
+                        <label asp-for="AktifMi" class="custom-control-label font-weight-bold small text-secondary"></label>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end" style="gap: 10px;">
+                    <a asp-action="BasvuruListesi" class="btn btn-secondary px-4">
+                        <i class="fas fa-arrow-left mr-1"></i> Listeye Dön
+                    </a>
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                        <i class="fas fa-save mr-1"></i> Başvuruyu Kaydet
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

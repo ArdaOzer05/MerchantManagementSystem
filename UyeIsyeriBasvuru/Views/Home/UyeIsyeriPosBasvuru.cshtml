@@ -1,0 +1,143 @@
+﻿@model UyeIsyeriBasvuru.Models.UyeIsyeriPosBasvuru
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-network-wired text-primary mr-2"></i> Üye İşyeri POS Başvuru Entegrasyonu
+        </h1>
+    </div>
+
+    @* --- BİLDİRİM VE HATA YÖNETİMİ --- *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-ban mr-1"></i> Başvuru Eksikleri Mevcut:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    @* --- BAŞVURU FORMU --- *@
+    <div class="card shadow mb-4 border-left-success">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-sliders-h mr-1"></i> VakıfBank Üye İşyeri Parametre ve Özellik Yapılandırması</h6>
+        </div>
+        <div class="card-body text-dark">
+            <form asp-controller="Home" asp-action="UyeIsyeriPosBasvuru" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    @* Başvuru Bağlantısı *@
+                    <div class="form-group col-md-6">
+                        <label asp-for="BasvuruId" class="font-weight-bold small text-primary">CRM Başvuru Havuzu</label>
+                        <select asp-for="BasvuruId" class="form-control text-dark" asp-items="@(new SelectList(ViewBag.Basvurular, "BasvuruId", "Aciklama"))">
+                            <option value="">-- Başvuru Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="BasvuruId" class="text-danger small"></span>
+                    </div>
+
+                    @* POS Tipi (Radio Butonlar) *@
+                    <div class="form-group col-md-6">
+                        <label asp-for="PosTipi" class="font-weight-bold small text-secondary"></label>
+                        <div class="d-flex align-items-center pt-2">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" asp-for="PosTipi" value="Fiziki POS" id="rbFiziki" class="custom-control-input" checked />
+                                <label class="custom-control-label" for="rbFiziki"><i class="fas fa-cash-register mr-1"></i> Fiziki POS</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" asp-for="PosTipi" value="Sanal POS" id="rbSanal" class="custom-control-input" />
+                                <label class="custom-control-label" for="rbSanal"><i class="fas fa-globe mr-1"></i> Sanal POS (VPOS)</label>
+                            </div>
+                        </div>
+                        <span asp-validation-for="PosTipi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider" />
+
+                <div class="row">
+                    @* Sol Bölüm: Adetler ve VUK Durumları *@
+                    <div class="col-lg-6 border-right">
+                        <h6 class="font-weight-bold text-secondary mb-3"><i class="fas fa-calculator mr-1"></i> Cihaz Limitleri</h6>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="MasaustuPosAdet" class="small font-weight-bold"></label>
+                                <input asp-for="MasaustuPosAdet" type="number" class="form-control text-dark" min="0" max="50" />
+                                <span asp-validation-for="MasaustuPosAdet" class="text-danger small"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="MobilPosGsmAdet" class="small font-weight-bold"></label>
+                                <input asp-for="MobilPosGsmAdet" type="number" class="form-control text-dark" min="0" max="50" />
+                                <span asp-validation-for="MobilPosGsmAdet" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <h6 class="font-weight-bold text-secondary my-3"><i class="fas fa-gavel mr-1"></i> Vergi Usul Kanunu (VUK) Mevzuatı</h6>
+
+                        <div class="form-group">
+                            <label asp-for="VukMobilPosDurum" class="small font-weight-bold"></label>
+                            <select asp-for="VukMobilPosDurum" class="form-control text-dark">
+                                <option value="Muaf">Muaf / Kapsam Dışı</option>
+                                <option value="VUK 507 Uyumlu">VUK 507 Protokolüne Tabi</option>
+                                <option value="Eski Nesil Cihaz">Eski Nesil Cihaz Dönüşümü</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="VukSabitPosDurum" class="small font-weight-bold"></label>
+                            <select asp-for="VukSabitPosDurum" class="form-control text-dark">
+                                <option value="Muaf">Muaf</option>
+                                <option value="Entegre Yapı">Yazar Kasa Entegre Sistem</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @* Sağ Bölüm: Bankacılık / World Özellikleri ve Flagler *@
+                    <div class="col-lg-6 pl-lg-4">
+                        <h6 class="font-weight-bold text-secondary mb-3"><i class="fas fa-toggle-on mr-1"></i> Aktif Edilecek Kampanya & POS Türleri</h6>
+
+                        <div class="form-group custom-control custom-switch py-1">
+                            <input type="checkbox" asp-for="IsYazarkasaPos" class="custom-control-input" id="swYazarkasa">
+                            <label class="custom-control-label font-weight-bold text-dark" for="swYazarkasa">Ödeme Kaydedici Cihaz (ÖKC) / Yazar Kasa POS Entegrasyonu</label>
+                        </div>
+
+                        <div class="form-group custom-control custom-switch py-1">
+                            <input type="checkbox" asp-for="IsDoktorPos" class="custom-control-input" id="swDoktor">
+                            <label class="custom-control-label font-weight-bold text-dark" for="swDoktor">Doktor POS Modülü (Tıbbi Makbuz Entegrasyonlu)</label>
+                        </div>
+
+                        <div class="form-group custom-control custom-switch py-1">
+                            <input type="checkbox" asp-for="IsMultiCurrencyPos" class="custom-control-input" id="swDoviz">
+                            <label class="custom-control-label font-weight-bold text-dark" for="swDoviz">Dövizli İşlem (USD, EUR, GBP Ödeme Alma yetkisi)</label>
+                        </div>
+
+                        <div class="form-group custom-control custom-switch py-1">
+                            <input type="checkbox" asp-for="IsTarimPos" class="custom-control-input" id="swTarim">
+                            <label class="custom-control-label font-weight-bold text-dark" for="swTarim">VakıfBank Tarım Kart / Üye Kart Kampanyalarına Dahil Et</label>
+                        </div>
+
+                        <div class="form-group custom-control custom-switch py-1 border-top pt-2 mt-2">
+                            <input type="checkbox" asp-for="IsOrtakPos" class="custom-control-input" id="swOrtak">
+                            <label class="custom-control-label font-weight-bold text-dark" for="swOrtak">Ortak POS Kullanımı (Diğer banka uygulamaları yüklenecek)</label>
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label asp-for="MisafirBanka" class="small font-weight-bold text-muted">Ortak POS ise Misafir Bankalar</label>
+                            <input asp-for="MisafirBanka" class="form-control text-dark" placeholder="Örn: Yapı Kredi, Akbank" />
+                            <span asp-validation-for="MisafirBanka" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success px-5 shadow-sm">
+                        <i class="fas fa-check mr-1"></i> POS Başvurusunu Tamamla ve VakıfBank'a İlet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

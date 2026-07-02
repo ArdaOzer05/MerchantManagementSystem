@@ -1,0 +1,329 @@
+﻿@model UyeIsyeriBasvuru.Models.UyeIsyeriBasvuruModel
+
+@{
+    dynamic firmaBilgisi = Model?.FirmaBilgileri?.FirstOrDefault();
+    dynamic yetkiliBilgisi = Model?.Yetkililer?.FirstOrDefault();
+    dynamic bankaBilgisi = Model?.BankaBilgileri?.FirstOrDefault();
+    dynamic posBilgisi = Model?.PosTalepleri?.FirstOrDefault();
+    dynamic kredibiliteBilgisi = Model?.KredibiliteIslemleri?.FirstOrDefault();
+
+    string kanalX = "Belirtilmemiş";
+    string tipX = "Belirtilmemiş";
+    try { kanalX = firmaBilgisi?.BasvuruKanali ?? "Belirtilmemiş"; } catch { }
+    try { tipX = firmaBilgisi?.IsyeriTipi ?? "Belirtilmemiş"; } catch { }
+}
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
+            <i class="fas fa-shield-alt text-primary mr-2"></i> Başvuru Detay & Risk Analiz Paneli
+        </h1>
+        <a asp-action="BasvuruListesi" class="btn btn-sm btn-secondary shadow-sm px-3">
+            <i class="fas fa-arrow-left fa-sm mr-1"></i> Havuza Geri Dön
+        </a>
+    </div>
+
+    @* --- ÜST ÖZET KARTLARI ROW --- *@
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow h-100 border-left-primary py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Başvuru Numarası</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model?.BasvuruNO</div>
+                            <span class="text-muted small">ID: #@Model?.BasvuruId</span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-passport fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow h-100 border-left-info py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Müşteri ve İşyeri Tipi</div>
+                            <div class="h6 mb-0 font-weight-bold text-gray-800">@Model?.MusteriTipi / @tipX</div>
+                            <span class="text-muted small">Kanal: @kanalX</span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-store fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow h-100 @(Model?.BasvuruDurumu == "Onaylandı" ? "border-left-success" : Model?.BasvuruDurumu == "Reddedildi" ? "border-left-danger" : "border-left-warning") py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Güncel Karar Durumu</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @if (Model?.BasvuruDurumu == "Onaylandı")
+                                {
+                                    <span class="text-success"><i class="fas fa-check-circle"></i> Onaylandı</span>
+                                }
+                                else if (Model?.BasvuruDurumu == "Reddedildi")
+                                {
+                                    <span class="text-danger" title="Red Nedeni: @Model.RedNedeni"><i class="fas fa-times-circle"></i> Reddedildi</span>
+                                }
+                                else
+                                {
+                                    <span class="text-warning text-dark"><i class="fas fa-hourglass-half"></i> @Model?.BasvuruDurumu</span>
+                                }
+                            </div>
+                            <span class="text-muted small">Tarih: @Model?.BasvuruTarihi.ToString("dd.MM.yyyy HH:mm")</span>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-gavel fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- BLOK 1: FİRMA VE YETKİLİ BİLGİLERİ --- *@
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-light border-bottom border-primary">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-building mr-1"></i> Firma Yasal / Ticari Bilgileri</h6>
+                </div>
+                <div class="card-body text-dark">
+                    <div class="form-group">
+                        <label class="font-weight-bold small text-secondary">Firma Ticari Unvanı</label>
+                        <input type="text" class="form-control bg-white text-dark" value="@firmaBilgisi?.FirmaUnvan" readonly />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="font-weight-bold small text-secondary">Vergi Numarası / TCKN</label>
+                            <input type="text" class="form-control bg-white text-dark font-weight-bold" value="@firmaBilgisi?.VergiNo" readonly />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="font-weight-bold small text-secondary">Vergi Dairesi</label>
+                            <input type="text" class="form-control bg-white text-dark" value="@firmaBilgisi?.VergiDairesi" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="font-weight-bold small text-secondary">Yasal Tebligat Adresi</label>
+                        <textarea class="form-control bg-white text-dark" rows="2" readonly>@firmaBilgisi?.Adres</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-light border-bottom border-info">
+                    <h6 class="m-0 font-weight-bold text-info"><i class="fas fa-user-tie mr-1"></i> İmza Sirküleri / Firma Yetkilisi</h6>
+                </div>
+                <div class="card-body text-dark">
+                    <div class="form-group">
+                        <label class="font-weight-bold small text-secondary">Adı Soyadı</label>
+                        <input type="text" class="form-control bg-white text-dark font-weight-bold" value="@yetkiliBilgisi?.Ad @yetkiliBilgisi?.Soyad" readonly />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="font-weight-bold small text-secondary">İletişim Gsm</label>
+                            <input type="text" class="form-control bg-white text-dark" value="@yetkiliBilgisi?.CepTelefonu" readonly />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="font-weight-bold small text-secondary">E-Posta Adresi</label>
+                            <input type="text" class="form-control bg-white text-dark" value="@yetkiliBilgisi?.Email" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="font-weight-bold small text-secondary">T.C. Kimlik Numarası</label>
+                        <input type="text" class="form-control bg-white text-dark" value="@yetkiliBilgisi?.TcKimlikNo" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- BLOK 2: BANKA VE POS TEKNİK DETAYLARI --- *@
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-light border-bottom border-success">
+                    <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-university mr-1"></i> Takas / Banka Hesap Bilgileri</h6>
+                </div>
+                <div class="card-body text-dark">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="font-weight-bold small text-secondary">Banka Kanalları</label>
+                            <input type="text" class="form-control bg-white text-dark" value="@bankaBilgisi?.BankaAdi" readonly />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label class="font-weight-bold small text-secondary">Hesap Numarası</label>
+                            <input type="text" class="form-control bg-white text-dark" value="@bankaBilgisi?.HesapNo" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="font-weight-bold small text-secondary">IBAN Numarası (Hakediş Takas Hesabı)</label>
+                        <input type="text" class="form-control bg-light font-weight-bold text-success" value="@bankaBilgisi?.Iban" readonly style="letter-spacing: 1px;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-light border-bottom border-warning">
+                    <h6 class="m-0 font-weight-bold text-warning text-dark"><i class="fas fa-hdd mr-1"></i> Talep Edilen POS Ürün Grupları</h6>
+                </div>
+                <div class="card-body text-dark">
+                    @if (posBilgisi != null)
+                    {
+                        string pModel = "Belirtilmemiş";
+                        string bTipi = "Belirtilmemiş";
+                        bool yKasa = false;
+                        bool fxYetki = false;
+
+                        try { pModel = posBilgisi.PosModeli ?? "Belirtilmemiş"; } catch { }
+                        try { bTipi = posBilgisi.BaglantiTipi ?? "Belirtilmemiş"; } catch { }
+                        try { yKasa = posBilgisi.IsYazarKasaPos ?? false; } catch { }
+                        try { fxYetki = posBilgisi.IsDovizIslem ?? false; } catch { }
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="font-weight-bold small text-secondary">POS Modeli / Yapısı</label>
+                                <input type="text" class="form-control bg-white text-dark" value="@pModel" readonly />
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="font-weight-bold small text-secondary">Bağlantı Altyapısı</label>
+                                <input type="text" class="form-control bg-white text-dark" value="@bTipi" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-0">
+                            <div class="col-md-6">
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input type="checkbox" class="custom-control-input" id="detayYazarKasa" checked="@yKasa" disabled />
+                                    <label class="custom-control-label font-weight-bold text-secondary small" for="detayYazarKasa">ÖKC / Yazar Kasa POS Özelliği</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input type="checkbox" class="custom-control-input" id="detayDoviz" checked="@fxYetki" disabled />
+                                    <label class="custom-control-label font-weight-bold text-secondary small" for="detayDoviz">Çoklu Para Birimi (FX) Yetkisi</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-exclamation-circle d-block mb-1"></i> Bu başvuruya ait donanım/POS kaydı bulunamadı.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- BLOK 3: MALİ KREDİBİLİTE VE ŞUBE İSTİHBARATI --- *@
+    <div class="card shadow mb-4 border-left-danger">
+        <div class="card-header py-3 bg-gradient-light d-flex align-items-center justify-content-between border-bottom">
+            <h6 class="m-0 font-weight-bold text-danger"><i class="fas fa-balance-scale mr-1"></i> Mali İstihbarat ve Kredibilite Analiz Raporu</h6>
+            @{
+                bool olumsuzMu = false;
+                try { olumsuzMu = kredibiliteBilgisi?.IsOlumsuzPosIstihbarat ?? false; } catch { }
+            }
+            @if (olumsuzMu)
+            {
+                <span class="badge badge-danger px-3 py-2 font-weight-bold"><i class="fas fa-user-slash mr-1"></i> SİSTEMSEL OLUMSUZ İSTİHBARAT ALARMI</span>
+            }
+            else
+            {
+                <span class="badge badge-success px-3 py-2 font-weight-bold"><i class="fas fa-shield-alt mr-1"></i> İstihbarat Temiz</span>
+            }
+        </div>
+        <div class="card-body text-dark">
+            @if (kredibiliteBilgisi != null)
+            {
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="font-weight-bold small text-secondary">Beyan Edilen Aylık Yurt İçi Ciro</label>
+                        <div class="input-group">
+                            @{
+                                string icCiro = "0,00";
+                                string icPara = "TRY";
+                                try { icCiro = kredibiliteBilgisi.AylikYurtIciCiro.ToString("N2"); } catch { }
+                                try { icPara = kredibiliteBilgisi.AylikYurtIciCiroParaBirimi ?? "TRY"; } catch { }
+                            }
+                            <input type="text" class="form-control bg-white font-weight-bold text-dark" value="@icCiro" readonly />
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-light font-weight-bold">@icPara</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="font-weight-bold small text-secondary">Beyan Edilen Aylık Yurt Dışı Ciro</label>
+                        <div class="input-group">
+                            @{
+                                string disCiro = "0,00";
+                                string disPara = "TRY";
+                                try { disCiro = kredibiliteBilgisi.AylikYurtDisiCiro.ToString("N2"); } catch { }
+                                try { disPara = kredibiliteBilgisi.AylikYurtDisiCiroParaBirimi ?? "TRY"; } catch { }
+                            }
+                            <input type="text" class="form-control bg-white font-weight-bold text-dark" value="@disCiro" readonly />
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-light font-weight-bold">@disPara</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label class="font-weight-bold small text-secondary">İşyeri Detaylı Faaliyet Konusu</label>
+                        @{
+                            string faaliyet = "";
+                            try { faaliyet = kredibiliteBilgisi.IsyeriFaaliyetKonusuDetay ?? ""; } catch { }
+                        }
+                        <textarea class="form-control bg-white text-dark" rows="3" readonly>@faaliyet</textarea>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="font-weight-bold small text-secondary text-info"><i class="fas fa-comments mr-1"></i> Şube Tahsis / Portföy Görüşü</label>
+                        @{
+                            string gorus = "";
+                            try { gorus = kredibiliteBilgisi.GenelSubeGorusu ?? ""; } catch { }
+                        }
+                        <textarea class="form-control bg-white text-dark font-italic" rows="3" readonly>@gorus</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-exclamation-circle d-block mb-1"></i> Bu başvuruya ait kredibilite/ciro analizi henüz yapılmamış.
+                </div>
+            }
+        </div>
+    </div>
+
+    @* --- ZAMAN DAMGALARI ALT PANEL --- *@
+    <div class="card shadow mb-4 bg-light text-center py-2 border-0">
+        <div class="small text-secondary font-weight-bold">
+            <span class="mx-3"><i class="far fa-calendar-alt mr-1"></i> Sisteme Giriş: @Model?.KayitTarihi.ToString("dd.MM.yyyy HH:mm")</span>
+            @if (Model?.GuncellemeTarihi != null)
+            {
+                <span class="mx-3"><i class="fas fa-edit mr-1"></i> Son Güncelleme: @Model.GuncellemeTarihi.Value.ToString("dd.MM.yyyy HH:mm")</span>
+            }
+            @if (Model?.OnayTarihi != null)
+            {
+                <span class="mx-3 text-success"><i class="fas fa-gavel mr-1"></i> Karar Zamanı: @Model.OnayTarihi.Value.ToString("dd.MM.yyyy HH:mm")</span>
+            }
+        </div>
+    </div>
+
+</div>

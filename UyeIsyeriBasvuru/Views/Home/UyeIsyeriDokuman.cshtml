@@ -1,0 +1,105 @@
+﻿@model UyeIsyeriBasvuru.Models.UyeIsyeriDokuman
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-file-upload text-primary mr-2"></i> Üye İşyeri Doküman Yükleme ve Kayıt
+        </h1>
+    </div>
+
+    @* --- BİLDİRİM VE HATA YÖNETİM ALANLARI --- *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @* Akıllı Hata Özet Kutusu (Sadece validasyon hatası durumunda tetiklenir) *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger shadow-sm">
+            <h6 class="font-weight-bold"><i class="fas fa-ban mr-1"></i> Form Validasyon Hatası:</h6>
+            <div asp-validation-summary="All" class="small pl-3"></div>
+        </div>
+    }
+
+    @* --- DOKÜMAN BİLGİLERİ FORMU --- *@
+    <div class="card shadow mb-4 border-left-primary">
+        <div class="card-header py-3 bg-light">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-paperclip mr-1"></i> Dijital Evrak Tanımlama ve Arşivleme Formu</h6>
+        </div>
+        <div class="card-body text-dark">
+
+            <form asp-controller="Home" asp-action="UyeIsyeriDokuman" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group bg-light p-3 rounded border">
+                    <label asp-for="BasvuruId" class="font-weight-bold small text-primary">İlişkili CRM Başvuru Kaydı</label>
+                    <select asp-for="BasvuruId" class="form-control" asp-items="@(new SelectList(ViewBag.Basvurular, "BasvuruId", "Aciklama"))">
+                        <option value="">-- Dokümanın Bağlanacağı Başvuruyu Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="BasvuruId" class="text-danger small"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="DokumanTipi" class="font-weight-bold small text-secondary"></label>
+                        <select asp-for="DokumanTipi" class="form-control">
+                            <option value="">-- Doküman Tipi Seçiniz --</option>
+                            <option value="Sözleşme">Sözleşme</option>
+                            <option value="Vergi Levhası">Vergi Levhası</option>
+                            <option value="İmza Sirküleri">İmza Sirküleri</option>
+                            <option value="Kimlik Fotokopisi">Kimlik Fotokopisi</option>
+                            <option value="Ticaret Sicil Gazetesi">Ticaret Sicil Gazetesi</option>
+                        </select>
+                        <span asp-validation-for="DokumanTipi" class="text-danger small"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label asp-for="DosyaAdi" class="font-weight-bold small text-secondary"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light far fa-file"></span>
+                            </div>
+                            <input asp-for="DosyaAdi" class="form-control" placeholder="Örn: vergi_levhasi_2026.pdf" />
+                        </div>
+                        <span asp-validation-for="DosyaAdi" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DosyaYolu" class="font-weight-bold small text-secondary"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light fas fa-folder-open"></span>
+                        </div>
+                        <input asp-for="DosyaYolu" class="form-control" placeholder="Örn: /uploads/documents/basvuru_102/vergi_levhasi.pdf" />
+                    </div>
+                    <span asp-validation-for="DosyaYolu" class="text-danger small"></span>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                        <i class="fas fa-cloud-upload-alt mr-1"></i> Evrak Bilgilerini Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
